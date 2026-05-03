@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { Icons } from './Icons';
 import './Message.css';
 
-const Message = ({ text, sender }) => {
+const Message = ({ text, sender, isLatest }) => {
   const isBot = sender === 'bot';
   const [isPlaying, setIsPlaying] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -19,63 +21,80 @@ const Message = ({ text, sender }) => {
       window.speechSynthesis.cancel();
       setIsPlaying(false);
     } else {
-      window.speechSynthesis.cancel(); // Stop any currently playing speech
-      
+      window.speechSynthesis.cancel();
       const cleanText = text.replace(/[*#_`]/g, '');
       const utterance = new SpeechSynthesisUtterance(cleanText);
-      
       utterance.onend = () => setIsPlaying(false);
       utterance.onerror = () => setIsPlaying(false);
-      
       window.speechSynthesis.speak(utterance);
       setIsPlaying(true);
     }
   };
 
+  const handleCopy = async () => {
+    try {
+      const cleanText = text.replace(/[*#_`]/g, '');
+      await navigator.clipboard.writeText(cleanText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
-    <div className={`message-wrapper ${isBot ? 'bot-wrapper' : 'user-wrapper'}`}>
-      {isBot && (
-        <div className="avatar bot-avatar">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 19.93C7.05 19.43 4 16.05 4 12C4 7.95 7.05 4.57 11 4.07V19.93ZM13 4.07C16.95 4.57 20 7.95 20 12C20 16.05 16.95 19.43 13 19.93V4.07Z" fill="currentColor"/>
-          </svg>
+    <div className={`msg ${isBot ? 'msg--bot' : 'msg--user'} ${isLatest ? 'msg--latest' : ''}`}>
+      <div className="msg__avatar-col">
+        <div className={`msg__avatar ${isBot ? 'msg__avatar--bot' : 'msg__avatar--user'}`}>
+          {isBot ? (
+            <Icons.bot style={{ width: 18, height: 18 }} />
+          ) : (
+            <Icons.user style={{ width: 18, height: 18 }} />
+          )}
         </div>
-      )}
-      
-      <div className="message-content">
-        <div className={`message-bubble ${isBot ? 'bot-bubble' : 'user-bubble'}`}>
+      </div>
+
+      <div className="msg__body">
+        <div className="msg__meta">
+          <span className="msg__sender">{isBot ? 'Nyaay Saathi' : 'You'}</span>
+        </div>
+
+        <div className={`msg__bubble ${isBot ? 'msg__bubble--bot' : 'msg__bubble--user'}`}>
           <ReactMarkdown>{text}</ReactMarkdown>
         </div>
-        
+
         {isBot && (
-          <div className="message-actions">
-            <button 
-              className={`tts-button ${isPlaying ? 'playing' : ''}`} 
+          <div className="msg__actions">
+            <button
+              className={`msg__action-btn ${isPlaying ? 'msg__action-btn--active' : ''}`}
               onClick={toggleSpeech}
-              title={isPlaying ? "Stop speaking" : "Read aloud"}
+              title={isPlaying ? 'Stop reading' : 'Read aloud'}
+              aria-label={isPlaying ? 'Stop reading' : 'Read aloud'}
             >
               {isPlaying ? (
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="7" y="7" width="10" height="10" fill="currentColor"/>
-                </svg>
+                <Icons.stop style={{ width: 13, height: 13 }} />
               ) : (
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 9V15H7L12 20V4L7 9H3ZM16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.77 16.5 12ZM14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z" fill="currentColor"/>
-                </svg>
+                <Icons.speaker style={{ width: 13, height: 13 }} />
               )}
-              <span>{isPlaying ? "Stop listening" : "Read aloud"}</span>
+              <span>{isPlaying ? 'Stop' : 'Read aloud'}</span>
+            </button>
+
+            <button
+              className={`msg__action-btn ${copied ? 'msg__action-btn--active' : ''}`}
+              onClick={handleCopy}
+              title="Copy response"
+              aria-label="Copy response"
+            >
+              {copied ? (
+                <Icons.check style={{ width: 13, height: 13 }} />
+              ) : (
+                <Icons.copy style={{ width: 13, height: 13 }} />
+              )}
+              <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
           </div>
         )}
       </div>
-
-      {!isBot && (
-        <div className="avatar user-avatar">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 6C13.66 6 15 7.34 15 9C15 10.66 13.66 12 12 12C10.34 12 9 10.66 9 9C9 7.34 10.34 6 12 6ZM12 20.2C9.5 20.2 7.29 18.92 6 16.98C6.03 14.99 10 13.9 12 13.9C13.99 13.9 17.97 14.99 18 16.98C16.71 18.92 14.5 20.2 12 20.2Z" fill="currentColor"/>
-          </svg>
-        </div>
-      )}
     </div>
   );
 };
