@@ -4,3 +4,8 @@ pydantic
 google-generativeai
 httpx
 python-dotenv
+motor
+pymongo
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart

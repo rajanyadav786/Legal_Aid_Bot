@@ -282,6 +282,86 @@
   flex: 1;
 }
 
+/* Dashboard Cards */
+.welcome__dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto var(--space-xl);
+}
+
+.welcome__dashboard-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--space-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+  animation: promptSlide 0.4s var(--ease-out) both;
+}
+
+.welcome__dashboard-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-saffron);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 12px var(--accent-glow);
+  background: color-mix(in srgb, var(--bg-elevated) 80%, var(--accent-glow) 20%);
+}
+
+.welcome__dashboard-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-saffron);
+  margin-bottom: var(--space-md);
+  transition: all 0.3s;
+}
+
+.welcome__dashboard-card:hover .welcome__dashboard-icon {
+  background: var(--accent-saffron);
+  color: #fff;
+}
+
+.welcome__dashboard-title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.welcome__dashboard-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.welcome__dashboard-arrow {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  color: var(--accent-saffron);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s var(--ease-spring);
+}
+
+.welcome__dashboard-card:hover .welcome__dashboard-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 /* Category pills */
 .welcome__categories {
   width: 100%;
