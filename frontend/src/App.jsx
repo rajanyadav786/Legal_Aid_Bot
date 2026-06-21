@@ -2,13 +2,15 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LoginPage, RegisterPage } from './pages/AuthPage';
 import AdminPage from './pages/AdminPage';
+import UserDashboard from './pages/UserDashboard';
+import CommunityForum from './pages/CommunityForum';
 import Sidebar from './components/Sidebar';
 import ChatBox from './components/ChatBox';
 
 // ── Inner app (needs auth context) ───────────────────────────────────────────
 function AppInner() {
   const { user, loading } = useAuth();
-  const [page, setPage] = useState('login'); // 'login' | 'register' | 'chat' | 'admin'
+  const [page, setPage] = useState('login'); // 'login' | 'register' | 'chat' | 'admin' | 'dashboard' | 'forum'
   const [activeCategory, setActiveCategory] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gemini-3-flash-preview');
@@ -32,12 +34,16 @@ function AppInner() {
   }, []);
 
   const handleNewChat = useCallback(() => {
+    setActiveCategory(null);
     setActiveSession(null);
     setChatKey((k) => k + 1);
     setSidebarOpen(false);
   }, []);
 
   const handleSelectSession = useCallback((session) => {
+    if (session.category_id) {
+      setActiveCategory({ id: session.category_id, label: session.category_label });
+    }
     setActiveSession(session);
     setChatKey((k) => k + 1);
     setSidebarOpen(false);
@@ -70,6 +76,8 @@ function AppInner() {
   }
 
   if (page === 'admin') return <AdminPage onBack={() => setPage('chat')} />;
+  if (page === 'dashboard') return <UserDashboard onBack={() => setPage('chat')} />;
+  if (page === 'forum') return <CommunityForum onBack={() => setPage('chat')} />;
 
   return (
     <>
@@ -80,12 +88,15 @@ function AppInner() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         onGoAdmin={() => setPage('admin')}
+        onGoDashboard={() => setPage('dashboard')}
+        onGoForum={() => setPage('forum')}
         activeSessionId={activeSession?.id}
         onSelectSession={handleSelectSession}
       />
       <ChatBox
         key={chatKey}
         activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
         onOpenSidebar={() => setSidebarOpen(true)}
         selectedModel={selectedModel}
         setSelectedModel={setSelectedModel}

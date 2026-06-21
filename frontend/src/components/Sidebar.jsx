@@ -13,33 +13,12 @@ const Sidebar = ({
   isOpen,
   onClose,
   onGoAdmin,
+  onGoDashboard,
+  onGoForum,
   activeSessionId,
   onSelectSession,
 }) => {
-  const { user, authFetch, logout, isAdmin } = useAuth();
-  const [hoveredId, setHoveredId] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [loadingCats, setLoadingCats] = useState(true);
-
-  // Fetch categories from API
-  useEffect(() => {
-    fetch(`${API_BASE}/api/categories`)
-      .then((r) => r.json())
-      .then((data) => {
-        setCategories(data);
-        // Auto-select first if none active
-        if (!activeCategory && data.length > 0) {
-          onCategoryChange(data[0]);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingCats(false));
-  }, []);
-
-  const handleCategoryClick = (category) => {
-    onCategoryChange(category);
-    if (window.innerWidth <= 768) onClose?.();
-  };
+  const { user, logout, isAdmin } = useAuth();
 
   return (
     <>
@@ -105,11 +84,21 @@ const Sidebar = ({
           </button>
         </div>
 
-        {/* New chat button */}
-        <button className="sidebar__new-chat" onClick={onNewChat}>
-          <Icons.newChat style={{ width: 18, height: 18 }} />
-          <span>New Conversation</span>
-        </button>
+        {/* Quick Links */}
+        <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <button className="sidebar__new-chat" onClick={onNewChat}>
+            <Icons.newChat style={{ width: 18, height: 18 }} />
+            <span>New Conversation</span>
+          </button>
+          <button className="sidebar__new-chat" onClick={onGoDashboard} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Icons.receipt style={{ width: 18, height: 18 }} />
+            <span>My Dashboard</span>
+          </button>
+          <button className="sidebar__new-chat" onClick={onGoForum} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Icons.globe style={{ width: 18, height: 18 }} />
+            <span>Community Forum</span>
+          </button>
+        </div>
 
         {/* Chat History */}
         <div style={{ padding: '0 0.5rem', marginBottom: '0.25rem' }}>
@@ -119,44 +108,6 @@ const Sidebar = ({
             onDeleteSession={onNewChat}
           />
         </div>
-
-        <div className="sidebar__divider" />
-
-        <p className="sidebar__section-label">Choose Legal Issue</p>
-
-        {/* Categories */}
-        <nav className="sidebar__categories">
-          {loadingCats && (
-            <div style={{ padding: '1rem', color: 'rgba(255,255,255,0.3)', fontSize: '0.82rem', textAlign: 'center' }}>
-              Loading categories…
-            </div>
-          )}
-          {categories.map((cat) => {
-            const IconComponent = Icons[cat.icon] || Icons.scales;
-            const isActive = activeCategory?.id === cat.id;
-            return (
-              <button
-                key={cat.id}
-                className={`category-card ${isActive ? 'category-card--active' : ''}`}
-                onClick={() => handleCategoryClick(cat)}
-                onMouseEnter={() => setHoveredId(cat.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                aria-pressed={isActive}
-                aria-label={`Select ${cat.label} category`}
-                style={{ '--cat-color': cat.color, '--cat-glow': `${cat.color}22` }}
-              >
-                <div className="category-card__icon">
-                  <IconComponent style={{ width: 18, height: 18 }} />
-                </div>
-                <div className="category-card__text">
-                  <span className="category-card__label">{cat.label}</span>
-                  <span className="category-card__desc">{cat.description}</span>
-                </div>
-                {isActive && <div className="category-card__indicator" />}
-              </button>
-            );
-          })}
-        </nav>
 
         {/* Footer */}
         <div className="sidebar__footer">

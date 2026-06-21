@@ -42,6 +42,10 @@ const Message = ({ text, sender, isLatest }) => {
     }
   };
 
+  const handleCallAgent = () => {
+    alert("Initiating call to local language AI Agent...");
+  };
+
   return (
     <div className={`msg ${isBot ? 'msg--bot' : 'msg--user'} ${isLatest ? 'msg--latest' : ''}`}>
       <div className="msg__avatar-col">
@@ -91,6 +95,16 @@ const Message = ({ text, sender, isLatest }) => {
                 <Icons.copy style={{ width: 13, height: 13 }} />
               )}
               <span>{copied ? 'Copied' : 'Copy'}</span>
+            </button>
+
+            <button
+              className="msg__action-btn"
+              onClick={handleCallAgent}
+              title="Call AI Agent in local language"
+              aria-label="Call AI Agent in local language"
+            >
+              <Icons.phone style={{ width: 13, height: 13 }} />
+              <span>Call AI Agent</span>
             </button>
           </div>
         )}

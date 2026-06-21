@@ -10,35 +10,9 @@ const DEFAULT_QUICK_PROMPTS = [
   'What is the process to get a legal aid lawyer for free?',
 ];
 
-const GENERAL_CARDS = [
-  {
-    icon: 'briefcase',
-    title: 'Employment & Labour',
-    desc: 'Ask about unfair dismissal, wages, or workplace rights.',
-    prompt: 'What are my rights regarding unfair dismissal from my job?',
-  },
-  {
-    icon: 'home',
-    title: 'Property Disputes',
-    desc: 'Understand laws around inheritance, tenancy, and ownership.',
-    prompt: 'How do I resolve a property inheritance dispute?',
-  },
-  {
-    icon: 'family',
-    title: 'Family Law',
-    desc: 'Divorce, child custody, alimony, and domestic violence.',
-    prompt: 'What is the legal procedure for mutual consent divorce?',
-  },
-  {
-    icon: 'shield',
-    title: 'Fundamental Rights',
-    desc: 'Learn about RTI, constitutional rights, and legal aid.',
-    prompt: 'How do I file an RTI application online?',
-  }
-];
-
 const ChatBox = ({
   activeCategory,
+  onCategoryChange,
   onOpenSidebar,
   selectedModel,
   setSelectedModel,
@@ -51,9 +25,22 @@ const ChatBox = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [sessionId, setSessionId] = useState(activeSession?.id || null);
+  const [categories, setCategories] = useState([]);
+  const [loadingCats, setLoadingCats] = useState(false);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const recognition = useRef(null);
+
+  useEffect(() => {
+    if (!activeCategory || activeCategory.id === 'general') {
+      setLoadingCats(true);
+      authFetch('/api/categories')
+        .then(r => r.json())
+        .then(data => setCategories(data))
+        .catch(() => {})
+        .finally(() => setLoadingCats(false));
+    }
+  }, [activeCategory, authFetch]);
 
   // Load messages from an existing session
   useEffect(() => {
@@ -243,26 +230,30 @@ const ChatBox = ({
 
             {(!activeCategory || activeCategory.id === 'general') ? (
               <div className="welcome__dashboard-grid">
-                {GENERAL_CARDS.map((card, i) => {
-                  const CardIcon = Icons[card.icon] || Icons.scales;
-                  return (
-                    <button
-                      key={i}
-                      className="welcome__dashboard-card"
-                      onClick={() => handleSend(card.prompt)}
-                      style={{ animationDelay: `${i * 0.08}s` }}
-                    >
-                      <div className="welcome__dashboard-icon">
-                        <CardIcon style={{ width: 22, height: 22 }} />
-                      </div>
-                      <div className="welcome__dashboard-title">{card.title}</div>
-                      <div className="welcome__dashboard-desc">{card.desc}</div>
-                      <div className="welcome__dashboard-arrow">
-                        <Icons.send style={{ width: 16, height: 16 }} />
-                      </div>
-                    </button>
-                  );
-                })}
+                {loadingCats ? (
+                  <p style={{ color: 'var(--text-muted)' }}>Loading categories...</p>
+                ) : (
+                  categories.map((cat, i) => {
+                    const CardIcon = Icons[cat.icon] || Icons.scales;
+                    return (
+                      <button
+                        key={cat.id}
+                        className="welcome__dashboard-card"
+                        onClick={() => onCategoryChange(cat)}
+                        style={{ animationDelay: `${i * 0.08}s` }}
+                      >
+                        <div className="welcome__dashboard-icon" style={{ color: cat.color }}>
+                          <CardIcon style={{ width: 22, height: 22 }} />
+                        </div>
+                        <div className="welcome__dashboard-title">{cat.label}</div>
+                        <div className="welcome__dashboard-desc">{cat.description}</div>
+                        <div className="welcome__dashboard-arrow" style={{ color: cat.color }}>
+                          <Icons.send style={{ width: 16, height: 16 }} />
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             ) : (
               <div className="welcome__prompts">
@@ -317,6 +308,17 @@ const ChatBox = ({
         )}
         <div ref={messagesEndRef} />
       </main>
+
+      {/* Floating Agent Button */}
+      {!showWelcome && (
+        <button 
+          className="chat__floating-agent"
+          onClick={() => alert("Connecting to Local Language AI Assistant...")}
+        >
+          <Icons.phone style={{ width: 18, height: 18 }} />
+          <span>Call Assistance</span>
+        </button>
+      )}
 
       {/* Input area */}
       <footer className="chat__input-area">

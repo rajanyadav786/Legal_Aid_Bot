@@ -162,6 +162,7 @@
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -187,9 +188,12 @@
 }
 
 @keyframes ringPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(232, 146, 47, 0.15);
   }
+
   50% {
     box-shadow: 0 0 0 12px rgba(232, 146, 47, 0);
   }
@@ -265,6 +269,7 @@
     opacity: 0;
     transform: translateX(-12px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -311,7 +316,7 @@
 .welcome__dashboard-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent-saffron);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 4px 12px var(--accent-glow);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 4px 12px var(--accent-glow);
   background: color-mix(in srgb, var(--bg-elevated) 80%, var(--accent-glow) 20%);
 }
 
@@ -432,15 +437,39 @@
   animation: wave 1.2s ease-in-out infinite alternate;
 }
 
-.chat__wave span:nth-child(1) { height: 6px; animation-delay: 0s; }
-.chat__wave span:nth-child(2) { height: 12px; animation-delay: 0.1s; }
-.chat__wave span:nth-child(3) { height: 18px; animation-delay: 0.2s; }
-.chat__wave span:nth-child(4) { height: 12px; animation-delay: 0.3s; }
-.chat__wave span:nth-child(5) { height: 6px; animation-delay: 0.4s; }
+.chat__wave span:nth-child(1) {
+  height: 6px;
+  animation-delay: 0s;
+}
+
+.chat__wave span:nth-child(2) {
+  height: 12px;
+  animation-delay: 0.1s;
+}
+
+.chat__wave span:nth-child(3) {
+  height: 18px;
+  animation-delay: 0.2s;
+}
+
+.chat__wave span:nth-child(4) {
+  height: 12px;
+  animation-delay: 0.3s;
+}
+
+.chat__wave span:nth-child(5) {
+  height: 6px;
+  animation-delay: 0.4s;
+}
 
 @keyframes wave {
-  0% { transform: scaleY(0.4); }
-  100% { transform: scaleY(1.1); }
+  0% {
+    transform: scaleY(0.4);
+  }
+
+  100% {
+    transform: scaleY(1.1);
+  }
 }
 
 /* ---- Loading indicator ---- */
@@ -466,8 +495,15 @@
 }
 
 @keyframes loadingPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .chat__loading-content {
@@ -498,13 +534,101 @@
   animation: dotBounce 1.4s infinite ease-in-out both;
 }
 
-.chat__loading-dots span:nth-child(1) { animation-delay: 0s; }
-.chat__loading-dots span:nth-child(2) { animation-delay: 0.16s; }
-.chat__loading-dots span:nth-child(3) { animation-delay: 0.32s; }
+.chat__loading-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.chat__loading-dots span:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.chat__loading-dots span:nth-child(3) {
+  animation-delay: 0.32s;
+}
 
 @keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.4); opacity: 0.4; }
-  40% { transform: scale(1); opacity: 1; }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.4);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---- Floating AI Agent ---- */
+.chat__floating-agent {
+  position: absolute;
+  bottom: 1px;
+  right: var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--accent-saffron), var(--accent-warm));
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(232, 146, 47, 0.4);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 100;
+  animation: floatBounce 3s ease-in-out infinite;
+}
+
+.chat__floating-agent:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(232, 146, 47, 0.6);
+  animation-play-state: paused;
+}
+
+.chat__floating-agent:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.chat__floating-agent svg {
+  animation: ringShake 4s ease-in-out infinite;
+}
+
+@keyframes floatBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes ringShake {
+
+  0%,
+  80%,
+  100% {
+    transform: rotate(0);
+  }
+
+  85% {
+    transform: rotate(-15deg);
+  }
+
+  90% {
+    transform: rotate(15deg);
+  }
+
+  95% {
+    transform: rotate(-15deg);
+  }
 }
 
 /* ---- Input Area ---- */
@@ -584,9 +708,17 @@
 }
 
 @keyframes micPulse {
-  0% { box-shadow: 0 0 0 0 rgba(224, 82, 82, 0.3); }
-  70% { box-shadow: 0 0 0 8px rgba(224, 82, 82, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(224, 82, 82, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 82, 82, 0.3);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(224, 82, 82, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 82, 82, 0);
+  }
 }
 
 /* Send button */
@@ -659,6 +791,13 @@
 
   .chat__header-desc {
     display: none;
+  }
+
+  .chat__floating-agent {
+    bottom: 90px;
+    right: var(--space-md);
+    padding: 10px 16px;
+    font-size: 0.85rem;
   }
 }
 
